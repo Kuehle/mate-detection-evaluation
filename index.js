@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const argv = require("minimist")(process.argv.slice(2));
 const { exec } = require("child_process");
 const path = require("path");
@@ -13,17 +11,17 @@ const logFile = argv["l"] || argv["log"] || "log";
 const successScript = argv["s"] || argv["success"];
 const failScript = argv["f"] || argv["fail"];
 
-interface Input {
-  info: {
-    imgUrl: string;
-  };
-  results: Detected[];
-}
+// interface Input {
+//   info: {
+//     imgUrl: string;
+//   };
+//   results: Detected[];
+// }
 
-interface Detected {
-  label: string;
-  confidence: number;
-}
+// interface Detected {
+//   label: string;
+//   confidence: number;
+// }
 
 const stdin = process.stdin,
   stdout = process.stdout,
@@ -47,7 +45,7 @@ stdin.on("end", function() {
   stdout.write("\n");
 });
 
-const main = async (input: Input) => {
+const main = async (input /*: Input*/) => {
   const isMate = hasMate(input);
   const date = new Date();
   log
@@ -86,7 +84,7 @@ const hasMate = (input: Input): Boolean => {
 };
 
 const log = {
-  write: (...values: any) => {
+  write: (...values) => {
     console.log(...values);
     const str = values.join("") + "\n";
     return fs.appendFile(logFile, str);
