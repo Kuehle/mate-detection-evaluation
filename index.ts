@@ -9,7 +9,7 @@ const fs = require("fs").promises;
 const readLastLines = require("read-last-lines");
 
 const alwaysRun = argv["a"] || argv["always"];
-const logFile = argv["l"] || argv["log"];
+const logFile = argv["l"] || argv["log"] || "log";
 const successScript = argv["s"] || argv["success"];
 const failScript = argv["f"] || argv["fail"];
 
@@ -57,7 +57,7 @@ const main = async (input: Input) => {
       "Mate is " + (isMate ? "available" : "NOT available right now")
     )
     .then(async () => {
-      const shouldExecute = log.shouldExecute();
+      const shouldExecute = await log.shouldExecute();
       let scriptPath;
       if (isMate && shouldExecute) {
         scriptPath = successScript;
@@ -68,7 +68,7 @@ const main = async (input: Input) => {
         await execPromise(scriptPath);
       } catch (e) {
         if (
-          e.message !==
+          e.message ===
           'The "file" argument must be of type string. Received type undefined'
         )
           return;
@@ -93,8 +93,12 @@ const log = {
   },
   shouldExecute: async () => {
     // only execute scripts when the state has changed
-    const lastLines = await readLastLines.read(logFile, 2);
-    const result = lastLines[0].split["|"][1] !== lastLines[1].split["|"][1];
+    const lastLinesStr = await readLastLines.read(logFile, 2);
+    const latest = lastLinesStr
+      .split("\n")
+      .filter(Boolean)
+      .map(el => el.split("|")[1]);
+    const result = latest[0] !== latest[1];
     return alwaysRun || result;
   }
 };
