@@ -8,6 +8,7 @@ const execPromise = util.promisify(exec);
 const fs = require("fs").promises;
 const readLastLines = require("read-last-lines");
 
+const alwaysRun = argv["a"] || argv["always"];
 const logFile = argv["l"] || argv["log"];
 const successScript = argv["s"] || argv["success"];
 const failScript = argv["f"] || argv["fail"];
@@ -48,29 +49,34 @@ stdin.on("end", function() {
 
 const main = async (input: Input) => {
   const isMate = hasMate(input);
-
-  try {
-    console.log("Last was success?", await log.isLastSuccess());
-  } catch (e) {}
   const date = new Date();
-  log.write(
-    date.toLocaleString("en-GB"),
-    "|",
-    "Mate is " + (isMate ? "available" : "NOT available right now")
-  );
-
-  try {
-    const result = await execPromise(isMate ? successScript : failScript);
-  } catch (e) {
-    if (
-      e.message !==
-      'The "file" argument must be of type string. Received type undefined'
+  log
+    .write(
+      date.toLocaleString("en-GB"),
+      "|",
+      "Mate is " + (isMate ? "available" : "NOT available right now")
     )
-      console.error(e);
-  }
+    .then(async () => {
+      const shouldExecute = log.shouldExecute();
+      let scriptPath;
+      if (isMate && shouldExecute) {
+        scriptPath = successScript;
+      } else if (!isMate && shouldExecute) {
+        scriptPath = failScript;
+      }
+      try {
+        await execPromise(scriptPath);
+      } catch (e) {
+        if (
+          e.message !==
+          'The "file" argument must be of type string. Received type undefined'
+        )
+          return;
+        else console.error(e.message);
+      }
+    });
 };
 
-// returns if there is still mate in the fridge
 const hasMate = (input: Input): Boolean => {
   return Boolean(
     input.results.find(
@@ -85,12 +91,10 @@ const log = {
     const str = values.join("") + "\n";
     return fs.appendFile(logFile, str);
   },
-  isLastSuccess: async () => {
-    const lastLines = await readLastLines.read(logFile, 1);
-    return !Boolean(lastLines.match(/NOT/));
+  shouldExecute: async () => {
+    // only execute scripts when the state has changed
+    const lastLines = await readLastLines.read(logFile, 2);
+    const result = lastLines[0].split["|"][1] !== lastLines[1].split["|"][1];
+    return alwaysRun || result;
   }
 };
-
-// const formatDate = (date: Date) => {
-//     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_`
-// }

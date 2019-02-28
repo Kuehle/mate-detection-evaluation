@@ -36,6 +36,11 @@ The expected Input from the classifier should look like the following:
 ## Arguments
 
 ```
+* --always -a =
+    if set, the success/fail script will be run each time
+    the script is run. Otherwise the scripts will only be
+    run when the state changes (looking at the log file)
+
 * --fail -f =
     path to a script that will be executed if mate is NOT
     available
