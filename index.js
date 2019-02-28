@@ -75,7 +75,7 @@ const main = async (input /*: Input*/) => {
     });
 };
 
-const hasMate = (input: Input): Boolean => {
+const hasMate = (input /*: Input*/) /*: Boolean*/ => {
   return Boolean(
     input.results.find(
       result => result.label === "bottle" && result.confidence >= 0.5
