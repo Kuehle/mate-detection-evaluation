@@ -31,3 +31,16 @@ The expected Input from the classifier should look like the following:
     ]
 }
 ```
+
+## Arguments
+
+```
+* --fail -f =
+    path to a script that will be executed if mate is NOT
+    available
+
+* --success -s =
+    path to a script that will be executed if mate is
+    available (may be omitted if you only want to notify
+    someone if fridge is empty)
+```
