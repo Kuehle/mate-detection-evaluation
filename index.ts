@@ -5,6 +5,12 @@ const { exec } = require("child_process");
 const path = require("path");
 const util = require("util");
 const execPromise = util.promisify(exec);
+const fs = require("fs").promises;
+const readLastLines = require("read-last-lines");
+
+const logFile = argv["l"] || argv["log"];
+const successScript = argv["s"] || argv["success"];
+const failScript = argv["f"] || argv["fail"];
 
 interface Input {
   info: {
@@ -41,13 +47,15 @@ stdin.on("end", function() {
 });
 
 const main = async (input: Input) => {
-  const successScript = argv["s"] || argv["success"];
-  const failScript = argv["f"] || argv["fail"];
-
   const isMate = hasMate(input);
 
-  console.log(
-    new Date(),
+  try {
+    console.log("Last was success?", await log.isLastSuccess());
+  } catch (e) {}
+  const date = new Date();
+  log.write(
+    date.toLocaleString("en-GB"),
+    "|",
     "Mate is " + (isMate ? "available" : "NOT available right now")
   );
 
@@ -70,3 +78,19 @@ const hasMate = (input: Input): Boolean => {
     )
   );
 };
+
+const log = {
+  write: (...values: any) => {
+    console.log(...values);
+    const str = values.join("") + "\n";
+    return fs.appendFile(logFile, str);
+  },
+  isLastSuccess: async () => {
+    const lastLines = await readLastLines.read(logFile, 1);
+    return !Boolean(lastLines.match(/NOT/));
+  }
+};
+
+// const formatDate = (date: Date) => {
+//     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_`
+// }

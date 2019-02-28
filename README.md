@@ -6,14 +6,15 @@ This Script is used to decide on what action to take based on the results from t
 
 Pipe output JSON from Image Detection to this script.
 
-`fswebcam image.jpg && python classify.py image.jpg | node mate-evaluate.js`
+`fswebcam image.jpg && python classify.py image.jpg | node mate-evaluate.js -f notify-someone -l log`
 
 The expected Input from the classifier should look like the following:
 
 ```JSON
 {
     "info": {
-        "imgUrl": "2019-07-28_10-17-34.jpg",
+        "input": "2019-07-28_10-17-34.jpg",
+        "output": "2019-07-28_10-17-34_labled.jpg"
     },
     "results": [
         {
@@ -43,4 +44,25 @@ The expected Input from the classifier should look like the following:
     path to a script that will be executed if mate is
     available (may be omitted if you only want to notify
     someone if fridge is empty)
+
+* --log -l =
+    Default=./log
+    path to a log file
+    is needed for history sensitive features (like running the
+    fail script only on the first failed attempt after a
+    successful run).
+```
+
+### Sample Log
+
+```
+28/02/2019, 14:28:57|Mate is NOT available right now
+28/02/2019, 14:29:01|Mate is NOT available right now
+28/02/2019, 14:29:06|Mate is NOT available right now
+28/02/2019, 14:29:44|Mate is available
+28/02/2019, 14:29:46|Mate is available
+28/02/2019, 14:29:49|Mate is available
+28/02/2019, 14:29:53|Mate is available
+28/02/2019, 14:30:06|Mate is NOT available right now
+28/02/2019, 14:30:08|Mate is NOT available right now
 ```
