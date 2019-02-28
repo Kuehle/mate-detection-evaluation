@@ -1,0 +1,2 @@
+#!/bin/sh
+curl -d "{\"text\":\"We are out of Mate, can someone please restock? Don't trust me? Check here https://klarna.com\"}" https://hooks.slack.com/services/xxxxxxxx/xxxxxxx/xxxxxxxxxx
