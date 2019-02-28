@@ -1,0 +1,23 @@
+{
+  "info": {
+    "imgUrl": "2019-07-28_10-17-34.jpg"
+  },
+  "results": [
+    {
+      "label": "bottle",
+      "confidence": 0.53
+    },
+    {
+      "label": "bottle",
+      "confidence": 0.53
+    },
+    {
+      "label": "bottle",
+      "confidence": 0.53
+    },
+    {
+      "label": "bottle",
+      "confidence": 0.53
+    }
+  ]
+}
